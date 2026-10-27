@@ -6,7 +6,7 @@ services:
     name: nexis-blog-painel
     runtime: node
     plan: free
-    region: virginia # a mesma região do banco do Neon reduz a latência
+    region: ohio # a mesma região do banco no Neon (AWS US East 2, Ohio) reduz a latência
     branch: main
     autoDeploy: true
     # SEED_ON_BUILD=true só no primeiro deploy: cadastra os rascunhos iniciais. Depois apague a variável.

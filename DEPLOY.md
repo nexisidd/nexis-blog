@@ -17,8 +17,8 @@ Ordem: Neon → R2 → Render (painel) → Cloudflare Pages (site) → ligar os 
 
 ## 1. Neon (banco)
 
-1. Entre em console.neon.tech e crie um projeto (`nexis-blog`). Região: **AWS US East (N. Virginia)**, a mesma do Render.
-2. Em **Connect**, marque **Pooled connection** e copie a connection string. Ela termina com `?sslmode=require`.
+1. Entre em console.neon.tech e crie um projeto (`nexis-blog`). Região: **AWS US East 2 (Ohio)**, a mesma do painel no Render (`region: ohio` no `render.yaml`).
+2. Clique em **Connect** (Conectar), ative **Connection pooling** e copie a connection string. O endereço tem `-pooler` e termina com `?sslmode=require`.
 3. Guarde: é o `DATABASE_URI`.
 
 ## 2. Cloudflare R2 (imagens)
