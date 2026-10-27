@@ -1,0 +1,54 @@
+# Blueprint do Render: https://render.com/docs/blueprint-spec
+# O build roda as migrações no Neon antes de gerar as páginas (o build lê o banco).
+services:
+  - type: web
+    name: nexis-blog
+    runtime: node
+    plan: starter # o plano gratuito hiberna após 15 min sem acesso
+    region: virginia # a mesma região do banco do Neon reduz a latência
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci && npm run migrate && npm run build
+    startCommand: npm start
+    healthCheckPath: /robots.txt
+    envVars:
+      - key: NODE_VERSION
+        value: 24.22.1
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URI
+        sync: false
+      - key: PAYLOAD_SECRET
+        generateValue: true
+      - key: CRON_SECRET
+        generateValue: true
+      - key: NEXT_PUBLIC_SERVER_URL
+        value: https://blog.iddnexis.com.br
+      - key: NEXT_PUBLIC_MAIN_SITE_URL
+        value: https://iddnexis.com.br
+      - key: JOBS_AUTORUN
+        value: "true"
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_REGION
+        value: auto
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_PUBLIC_URL
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM_ADDRESS
+        value: blog@iddnexis.com.br
+    domains:
+      - blog.iddnexis.com.br
