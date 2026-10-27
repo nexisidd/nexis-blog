@@ -20,6 +20,7 @@ import { Glossary } from './collections/Glossary'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
+import { deploySite } from './jobs/deploySite'
 import { sendInvite } from './jobs/sendInvite'
 import { migrations } from './migrations'
 
@@ -82,7 +83,7 @@ export default buildConfig({
     autoRun: [{ cron: '* * * * *', queue: 'default', limit: 10 }],
     shouldAutoRun: () => process.env.JOBS_AUTORUN !== 'false',
     deleteJobOnComplete: true,
-    tasks: [sendInvite],
+    tasks: [sendInvite, deploySite],
     access: {
       // Permite que um Cron Job do Render chame GET /api/payload-jobs/run com "Authorization: Bearer <CRON_SECRET>".
       run: ({ req }) =>

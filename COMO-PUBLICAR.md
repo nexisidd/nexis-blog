@@ -2,7 +2,9 @@
 
 Guia para quem escreve. Não precisa mexer em código.
 
-**Painel:** https://blog.iddnexis.com.br/admin
+**Painel:** https://nexis-blog-painel.onrender.com/admin (confirme o endereço com quem administra o blog)
+
+O painel usa um plano grátis que "dorme" quando ninguém está usando. Se a página demorar para abrir, espere cerca de 1 minuto: ele está acordando. O site público (blog.iddnexis.com.br) nunca dorme.
 
 ## 1. Entrar
 
@@ -45,8 +47,8 @@ Clique no **ícone de olho**, ao lado do botão de publicar. A página aparece a
 
 ## 5. Publicar ou agendar (Editor e Admin)
 
-- **Publicar agora:** botão **Publicar alterações**. O artigo entra no site em segundos, sem precisar de deploy.
-- **Agendar:** clique na setinha ao lado de **Publicar alterações** › **Agendar Publicação**, escolha data e hora e confirme. O artigo entra no ar sozinho no horário (com até 1 minuto de diferença).
+- **Publicar agora:** botão **Publicar alterações**. O artigo aparece no site em 3 a 5 minutos (o site é reconstruído sozinho). Várias publicações seguidas entram juntas.
+- **Agendar:** clique na setinha ao lado de **Publicar alterações** › **Agendar Publicação**, escolha data e hora e confirme. O artigo entra no ar sozinho em até ~1 hora depois do horário escolhido. Se a hora exata importa (ex.: lançamento), publique manualmente no horário.
 - **Atualizar um artigo publicado:** edite, mude a **Data de atualização** para hoje se a revisão for relevante e clique em **Publicar alterações**.
 - **Tirar do ar:** botão **Despublicar**.
 
@@ -59,6 +61,6 @@ Clique no **ícone de olho**, ao lado do botão de publicar. A página aparece a
 
 1. **Administração › Usuários › Criar novo**.
 2. Preencha nome, e-mail e **Perfil** (normalmente **Redator**). No campo de senha, coloque uma senha temporária qualquer (a pessoa vai trocar).
-3. Salve. A pessoa recebe em até 1 minuto o e-mail com o link para criar a própria senha.
+3. Salve. A pessoa recebe o e-mail com o link para criar a própria senha em alguns minutos (no máximo ~1 hora, se o painel estiver dormindo logo depois).
 
 Antes de publicar, confira o checklist em [CONTRIBUTING.md](CONTRIBUTING.md).

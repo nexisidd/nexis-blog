@@ -1,12 +1,11 @@
-import { RefreshRouteOnSave } from '@/components/RefreshRouteOnSave'
 import type { Metadata } from 'next'
-import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 
 import { Article } from '@/components/Article'
 import { CategoryPage } from '@/components/CategoryPage'
+import { RefreshRouteOnSave } from '@/components/RefreshRouteOnSave'
 import { absoluteMediaUrl, asMedia, mediaSize } from '@/lib/media'
-import { getAllPublishedSlugs, getPostBySlug } from '@/lib/queries'
+import { getAllPublishedSlugs, getPostBySlug, isDraftMode } from '@/lib/queries'
 import { pageMetadata } from '@/lib/seo'
 import { CATEGORIES, getCategory } from '@/lib/taxonomy'
 import type { Author } from '@/payload-types'
@@ -54,7 +53,7 @@ export default async function SlugPage({ params }: Props) {
 
   const post = await getPostBySlug(slug)
   if (!post) notFound()
-  const { isEnabled: draft } = await draftMode()
+  const draft = await isDraftMode()
   return (
     <>
       {draft ? <RefreshRouteOnSave /> : null}

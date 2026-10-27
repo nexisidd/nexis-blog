@@ -1,6 +1,8 @@
 import { revalidatePath } from 'next/cache'
 import type { PayloadRequest } from 'payload'
 
+import { queueSiteDeploy } from '@/jobs/deploySite'
+
 export const revalidateSecret = () => process.env.REVALIDATE_SECRET || process.env.PAYLOAD_SECRET || ''
 
 // Revalida as páginas públicas afetadas por uma mudança, sem rebuild.
@@ -32,3 +34,10 @@ export const revalidatePaths = (paths: string[], req?: PayloadRequest) => {
 }
 
 export const GLOBAL_PATHS = ['/', '/sitemap.xml', '/rss.xml', '/llms.txt']
+
+// Toda mudança que afeta o site público: atualiza as páginas do painel (prévia e modo único)
+// e agenda a reconstrução do site estático no Cloudflare Pages, se configurado.
+export const onSiteChange = async (paths: string[], req: PayloadRequest, reason: string) => {
+  revalidatePaths(paths, req)
+  await queueSiteDeploy(req, reason)
+}

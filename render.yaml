@@ -1,14 +1,16 @@
 # Blueprint do Render: https://render.com/docs/blueprint-spec
-# O build roda as migrações no Neon antes de gerar as páginas (o build lê o banco).
+# Este serviço é só o PAINEL (Payload). O site público fica no Cloudflare Pages e nunca hiberna.
+# No plano grátis o painel hiberna após 15 min sem acesso: ao abrir, ele leva cerca de 1 minuto para acordar.
 services:
   - type: web
-    name: nexis-blog
+    name: nexis-blog-painel
     runtime: node
-    plan: starter # o plano gratuito hiberna após 15 min sem acesso
+    plan: free
     region: virginia # a mesma região do banco do Neon reduz a latência
     branch: main
     autoDeploy: true
-    buildCommand: npm ci && npm run migrate && npm run build
+    # SEED_ON_BUILD=true só no primeiro deploy: cadastra os rascunhos iniciais. Depois apague a variável.
+    buildCommand: npm ci && npm run migrate && if [ "$SEED_ON_BUILD" = "true" ]; then npm run seed; fi && npm run build
     startCommand: npm start
     healthCheckPath: /robots.txt
     envVars:
@@ -22,10 +24,19 @@ services:
         generateValue: true
       - key: CRON_SECRET
         generateValue: true
+      # Endereço do painel. Se o Render der outro nome ao serviço, ajuste aqui (sem barra no fim).
       - key: NEXT_PUBLIC_SERVER_URL
+        value: https://nexis-blog-painel.onrender.com
+      # Endereço público do blog (Cloudflare Pages)
+      - key: NEXT_PUBLIC_SITE_URL
         value: https://blog.iddnexis.com.br
       - key: NEXT_PUBLIC_MAIN_SITE_URL
         value: https://iddnexis.com.br
+      # Deploy Hook do projeto no Cloudflare Pages (Settings › Builds › Deploy hooks)
+      - key: PAGES_DEPLOY_HOOK_URL
+        sync: false
+      - key: SEED_ON_BUILD
+        value: "true"
       - key: JOBS_AUTORUN
         value: "true"
       - key: S3_BUCKET
@@ -50,5 +61,3 @@ services:
         sync: false
       - key: EMAIL_FROM_ADDRESS
         value: blog@iddnexis.com.br
-    domains:
-      - blog.iddnexis.com.br

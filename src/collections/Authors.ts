@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { editorsAndAdmins } from '@/access'
 import { slugField } from '@/fields/slug'
-import { revalidatePaths } from '@/hooks/revalidate'
+import { onSiteChange } from '@/hooks/revalidate'
 
 export const Authors: CollectionConfig = {
   slug: 'authors',
@@ -30,8 +30,8 @@ export const Authors: CollectionConfig = {
   ],
   hooks: {
     afterChange: [
-      ({ doc, req }) => {
-        revalidatePaths(['/autores', `/autores/${doc.slug}`, '/sitemap.xml'], req)
+      async ({ doc, req }) => {
+        await onSiteChange(['/autores', `/autores/${doc.slug}`, '/sitemap.xml'], req, `autor ${doc.slug}`)
         return doc
       },
     ],

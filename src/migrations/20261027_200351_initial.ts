@@ -15,9 +15,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TYPE "public"."enum_datasets_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum__datasets_v_version_status" AS ENUM('draft', 'published');
   CREATE TYPE "public"."enum_users_role" AS ENUM('admin', 'editor', 'redator');
-  CREATE TYPE "public"."enum_payload_jobs_log_task_slug" AS ENUM('inline', 'sendInvite', 'schedulePublish');
+  CREATE TYPE "public"."enum_payload_jobs_log_task_slug" AS ENUM('inline', 'sendInvite', 'deploySite', 'schedulePublish');
   CREATE TYPE "public"."enum_payload_jobs_log_state" AS ENUM('failed', 'succeeded');
-  CREATE TYPE "public"."enum_payload_jobs_task_slug" AS ENUM('inline', 'sendInvite', 'schedulePublish');
+  CREATE TYPE "public"."enum_payload_jobs_task_slug" AS ENUM('inline', 'sendInvite', 'deploySite', 'schedulePublish');
   CREATE TABLE "posts_faq" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,

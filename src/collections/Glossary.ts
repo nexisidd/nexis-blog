@@ -3,7 +3,7 @@ import { APIError } from 'payload'
 
 import { canPublish, editorsAndAdmins, loggedIn, publishedOrLoggedIn } from '@/access'
 import { slugField } from '@/fields/slug'
-import { revalidatePaths } from '@/hooks/revalidate'
+import { onSiteChange } from '@/hooks/revalidate'
 
 export const Glossary: CollectionConfig = {
   slug: 'glossary',
@@ -44,8 +44,10 @@ export const Glossary: CollectionConfig = {
       },
     ],
     afterChange: [
-      ({ doc, req }) => {
-        revalidatePaths(['/glossario', '/sitemap.xml', '/llms.txt'], req)
+      async ({ doc, previousDoc, req }) => {
+        // Rascunhos (inclusive o autosave) não mexem no site.
+        if (doc._status === 'published' || previousDoc?._status === 'published')
+          await onSiteChange(['/glossario', '/sitemap.xml', '/llms.txt'], req, `termo ${doc.slug}`)
         return doc
       },
     ],

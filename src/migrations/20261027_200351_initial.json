@@ -4224,6 +4224,7 @@
       "values": [
         "inline",
         "sendInvite",
+        "deploySite",
         "schedulePublish"
       ]
     },
@@ -4241,6 +4242,7 @@
       "values": [
         "inline",
         "sendInvite",
+        "deploySite",
         "schedulePublish"
       ]
     }
@@ -4255,6 +4257,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "0e5aae28-42ec-410f-8392-618974877151",
+  "id": "017df98b-5b83-4f83-9064-b31dd282e2dd",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

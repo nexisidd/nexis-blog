@@ -3,7 +3,7 @@ import { APIError } from 'payload'
 
 import { canPublish, editorsAndAdmins, loggedIn, publishedOrLoggedIn } from '@/access'
 import { slugField } from '@/fields/slug'
-import { revalidatePaths } from '@/hooks/revalidate'
+import { onSiteChange } from '@/hooks/revalidate'
 
 export const Datasets: CollectionConfig = {
   slug: 'datasets',
@@ -69,8 +69,10 @@ export const Datasets: CollectionConfig = {
       },
     ],
     afterChange: [
-      ({ doc, req }) => {
-        revalidatePaths(['/dados', '/sitemap.xml', '/llms.txt'], req)
+      async ({ doc, previousDoc, req }) => {
+        // Rascunhos (inclusive o autosave) não mexem no site.
+        if (doc._status === 'published' || previousDoc?._status === 'published')
+          await onSiteChange(['/dados', '/sitemap.xml', '/llms.txt'], req, `pesquisa ${doc.slug}`)
         return doc
       },
     ],

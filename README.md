@@ -1,6 +1,6 @@
 # Blog da Nexis
 
-Blog em `https://blog.iddnexis.com.br`, feito para ser lido por pessoas e citado por assistentes de IA. Stack: Next.js 16 (App Router) + Payload CMS 3, Postgres no Neon, hospedagem no Render e imagens no Cloudflare R2 (ou S3).
+Blog em `https://blog.iddnexis.com.br`, feito para ser lido por pessoas e citado por assistentes de IA. Stack: Next.js 16 (App Router) + Payload CMS 3, Postgres no Neon, site público no Cloudflare Pages, painel no Render e imagens no Cloudflare R2.
 
 - **Quem escreve:** veja [COMO-PUBLICAR.md](COMO-PUBLICAR.md) e as regras editoriais em [CONTRIBUTING.md](CONTRIBUTING.md).
 - **Painel:** `/admin` (e-mail e senha; perfis Admin, Editor e Redator).
@@ -17,10 +17,10 @@ Blog em `https://blog.iddnexis.com.br`, feito para ser lido por pessoas e citado
 | `/autores` e `/autores/<slug>` | Equipe de redatores e página de cada autor |
 | `/sobre` | Política editorial |
 | `/robots.txt`, `/sitemap.xml`, `/rss.xml`, `/llms.txt` | Arquivos para buscadores e IAs |
-| `/admin`, `/api` | Painel e API do Payload (`noindex`) |
-| `/next/preview` | Ativa a prévia de rascunhos (só para quem está logado) |
+| `/admin`, `/api` | Painel e API do Payload (só no painel, `noindex`) |
+| `/next/preview` | Ativa a prévia de rascunhos (só no painel, para quem está logado) |
 
-As páginas públicas são geradas no servidor (SSG/ISR): o HTML já sai completo, sem depender de JavaScript. Quando um artigo é publicado, editado ou despublicado, o hook `afterChange` revalida o artigo, a editoria, a subcategoria, a home, o sitemap, o RSS e o `llms.txt`, sem rebuild. Por segurança, todas as páginas também se renovam a cada 1 hora.
+As páginas públicas saem como HTML completo, sem depender de JavaScript: no site estático (Cloudflare Pages) e também no painel, onde servem para a prévia.
 
 ## Desenvolvimento
 
@@ -45,21 +45,14 @@ npm run generate:types                      # atualiza src/payload-types.ts
 
 Faça commit da migração. No deploy, o Render roda `npm run migrate` antes do build, e o servidor também aplica as migrações pendentes ao subir (`prodMigrations`).
 
-## Deploy no Render
+## Deploy
 
-1. **Neon:** crie o projeto (região próxima à do Render) e uma branch `dev` para testes. Copie a connection string *pooled* da branch `main`.
-2. **R2:** crie um bucket (ex.: `nexis-blog`), um token de API com permissão de leitura e escrita nele, e ative o acesso público (domínio próprio, ex. `img.iddnexis.com.br`, ou `r2.dev`).
-3. **Render:** New › Blueprint › escolha este repositório. O `render.yaml` cria o Web Service (plano Starter). Preencha as variáveis marcadas como `sync: false` (lista completa em `.env.example`).
-4. **Domínio:** no Render, em Settings › Custom Domains, adicione `blog.iddnexis.com.br` e crie no DNS o `CNAME blog → <serviço>.onrender.com`. O HTTPS é emitido automaticamente.
-5. **Primeiro acesso:** abra `/admin` e crie o primeiro usuário (ele vira Admin automaticamente). Para cadastrar os rascunhos iniciais, rode o seed uma vez apontando para o banco de produção (pelo Shell do Render: `npm run seed`).
+O site público é HTML estático no **Cloudflare Pages** (nunca desliga). O painel roda no **Render** (plano grátis, pode hibernar). Passo a passo completo em [DEPLOY.md](DEPLOY.md).
 
-### Publicação agendada e convites
-
-Os dois usam a fila de jobs do Payload. O próprio Web Service processa a fila a cada minuto (`JOBS_AUTORUN=true`). Se um dia você preferir processar a fila por um Cron Job do Render, defina `JOBS_AUTORUN=false` e crie um Cron Job que rode a cada 5 minutos:
-
-```bash
-curl -fsS -H "Authorization: Bearer $CRON_SECRET" https://blog.iddnexis.com.br/api/payload-jobs/run
-```
+- `npm run build`: painel (Payload + páginas para a prévia). Com `NEXT_PUBLIC_SITE_URL` diferente de `NEXT_PUBLIC_SERVER_URL`, o painel inteiro fica com `noindex` e o `robots.txt` dele bloqueia tudo.
+- `npm run build:static`: site público em `out/`, só com páginas publicadas (lê o banco no build).
+- Ao publicar, despublicar ou apagar conteúdo, o painel agenda a tarefa `deploySite`. Ela espera 1 minuto, junta as mudanças e chama o Deploy Hook do Pages (`PAGES_DEPLOY_HOOK_URL`).
+- Publicação agendada e convites rodam na fila de jobs do painel. Como o painel grátis dorme, a ação `.github/workflows/processar-agendamentos.yml` o acorda de hora em hora e chama `/api/payload-jobs/run` com `CRON_SECRET`.
 
 ### E-mail
 

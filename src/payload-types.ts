@@ -107,6 +107,7 @@ export interface Config {
   jobs: {
     tasks: {
       sendInvite: TaskSendInvite;
+      deploySite: TaskDeploySite;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
@@ -502,7 +503,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'sendInvite' | 'schedulePublish';
+        taskSlug: 'inline' | 'sendInvite' | 'deploySite' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -535,7 +536,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'sendInvite' | 'schedulePublish') | null;
+  taskSlug?: ('inline' | 'sendInvite' | 'deploySite' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -872,6 +873,16 @@ export interface CollectionsWidget {
 export interface TaskSendInvite {
   input: {
     email: string;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskDeploySite".
+ */
+export interface TaskDeploySite {
+  input: {
+    reason?: string | null;
   };
   output?: unknown;
 }

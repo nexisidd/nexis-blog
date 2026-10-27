@@ -3,7 +3,7 @@ import { APIError } from 'payload'
 
 import { canPublish, loggedIn, ownOrEditor, publishedOrLoggedIn } from '@/access'
 import { slugField } from '@/fields/slug'
-import { GLOBAL_PATHS, revalidatePaths } from '@/hooks/revalidate'
+import { GLOBAL_PATHS, onSiteChange } from '@/hooks/revalidate'
 import { categoryOptions, splitSubcategory, subcategoryOptions } from '@/lib/taxonomy'
 import { countWords, readingTimeFromLexical } from '@/lib/text'
 
@@ -18,16 +18,20 @@ const pathsFor = (doc: { slug?: string | null; category?: string | null; subcate
   ].filter(Boolean)
 }
 
-const revalidateAfterChange: CollectionAfterChangeHook = ({ doc, previousDoc, req }) => {
+const revalidateAfterChange: CollectionAfterChangeHook = async ({ doc, previousDoc, req }) => {
   // Só mexe no site quando a versão publicada muda (publicar, atualizar publicado ou despublicar).
   if (doc._status === 'published' || previousDoc?._status === 'published') {
-    revalidatePaths([...pathsFor(doc), ...(previousDoc?.slug !== doc.slug ? pathsFor(previousDoc || {}) : [])], req)
+    await onSiteChange(
+      [...pathsFor(doc), ...(previousDoc?.slug !== doc.slug ? pathsFor(previousDoc || {}) : [])],
+      req,
+      `artigo ${doc.slug}`,
+    )
   }
   return doc
 }
 
-const revalidateAfterDelete: CollectionAfterDeleteHook = ({ doc, req }) => {
-  revalidatePaths(pathsFor(doc), req)
+const revalidateAfterDelete: CollectionAfterDeleteHook = async ({ doc, req }) => {
+  if (doc._status === 'published') await onSiteChange(pathsFor(doc), req, `artigo apagado ${doc.slug}`)
   return doc
 }
 

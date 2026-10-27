@@ -1,6 +1,20 @@
 // Configuração central do blog. URLs vêm do ambiente para funcionar em dev, staging e produção.
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000').replace(/\/$/, '')
+const trim = (url: string) => url.replace(/\/$/, '')
+
+// Endereço do painel (app Next + Payload).
+export const SERVER_URL = trim(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000')
+
+// Endereço público do blog (canonical, sitemap, JSON-LD). No modelo com Cloudflare Pages é
+// blog.iddnexis.com.br, diferente do painel; sem NEXT_PUBLIC_SITE_URL, os dois são o mesmo endereço.
+export const SITE_URL = trim(process.env.NEXT_PUBLIC_SITE_URL || SERVER_URL)
+
+// true durante o build do site estático (npm run build:static).
+export const STATIC_EXPORT = process.env.STATIC_EXPORT === 'true'
+
+// O painel, quando o site público está em outro endereço, fica inteiro fora dos buscadores
+// (as páginas dele existem só para a prévia).
+export const IS_PANEL_ONLY = !STATIC_EXPORT && SITE_URL !== SERVER_URL
 
 export const MAIN_SITE_URL = (process.env.NEXT_PUBLIC_MAIN_SITE_URL || 'https://iddnexis.com.br').replace(
   /\/$/,

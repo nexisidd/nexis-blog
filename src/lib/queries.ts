@@ -3,6 +3,7 @@ import { draftMode } from 'next/headers'
 import { cache } from 'react'
 import { getPayload, type Where } from 'payload'
 
+import { STATIC_EXPORT } from '@/lib/site'
 import type { Author, Dataset, Glossary, Post } from '@/payload-types'
 
 export const payloadClient = () => getPayload({ config: configPromise })
@@ -38,8 +39,11 @@ export const getPosts = async (opts: { where?: Where; limit?: number; page?: num
   })
 }
 
+// Modo prévia só existe no painel; no site estático não há rascunhos.
+export const isDraftMode = async () => (STATIC_EXPORT ? false : (await draftMode()).isEnabled)
+
 export const getPostBySlug = cache(async (slug: string) => {
-  const { isEnabled: draft } = await draftMode()
+  const draft = await isDraftMode()
   const payload = await payloadClient()
   const result = await payload.find({
     collection: 'posts',
